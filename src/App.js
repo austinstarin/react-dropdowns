@@ -5,21 +5,19 @@ import data from "./data";
 function App() {
   const [active, setActive] = useState();
   const dropdownRefs = useRef([]);
+
   dropdownRefs.current = data.map(
-    (_, i) => dropdownRefs.current[i] ?? createRef()
+    (_, i) => dropdownRefs.current[i] || createRef()
   );
 
   useEffect(() => {
     function closeOnBody(event) {
-      let dropdown = "";
-
-      for (let i = 0; i < dropdownRefs.current.length; i++) {
-        if (dropdownRefs.current[i].current.contains(event.target)) {
-          dropdown = i;
-        }
-      }
-
-      setActive(dropdown);
+      const { current } = dropdownRefs;
+      const contained = current.map((_, i) => {
+        return current[i].current.contains(event.target);
+      });
+      const position = contained.indexOf(true);
+      setActive(position);
     }
 
     document.addEventListener("click", closeOnBody);
